@@ -1,4 +1,4 @@
-.header-sign__text {
+.header__sign-link {
     font-family: 'Inter', sans-serif;
     color: #fff;
     text-decoration: none;
@@ -10,13 +10,13 @@
 }
 
 
-.header-sign__text:hover {
+.header__sign-link:hover {
     cursor: pointer;
     opacity: .6;
 }
 
 @media (max-width: 1100px) {
-    .header-sign__text {
+    .header__sign-link {
         margin-right: 27px;
     }
 }

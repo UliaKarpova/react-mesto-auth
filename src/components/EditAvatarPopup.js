@@ -3,9 +3,14 @@ import {useRef, useEffect, useState} from "react";
 import PopupWithForm from "./PopupWithForm";
 
 function EditAvatarPopup({isOpen, onClose, onUpdateAvatar, submitStatus}) {
+    const [isDisabled, setIsDisabled] = useState(false);
     const avatarRef = useRef('');
     const [isValid, setIsValid] = useState(true);
     const [validationMessage, setValidationMessage] = useState("");
+    
+    useEffect(() => {
+        setIsDisabled(submitStatus || !isValid);
+    }, [submitStatus, isValid])    
 
     useEffect(() => {
         avatarRef.current.value = "";
@@ -32,7 +37,7 @@ function EditAvatarPopup({isOpen, onClose, onUpdateAvatar, submitStatus}) {
         onClose={onClose} 
         onSubmit={handleSubmit}
         submitStatus={submitStatus} 
-        isValid={isValid} >
+        isDisabled={isDisabled} >
             
             <input className="popup__item"
             id="avatar-link" 

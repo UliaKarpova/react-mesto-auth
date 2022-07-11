@@ -1,25 +1,16 @@
 import React from 'react';
+import PopupWithForm from "./PopupWithForm";
 
 function ImageDeletePopup({name, title, isOpen, submit, onClose, onSubmit}) {
+    const isDisabled = false;
     return (
-        <div className={`popup popup_type_${name} ${isOpen && "popup_opened"}`}>
-        
-            <div className="popup__container">
-                <button type="button" 
-                className="popup__exit" 
-                onClick={onClose} />
-            
-                <h2 className="popup__title">{title}</h2>
-            
-                <form name={name} 
-                className="popup__form popup__edit-button" 
-                onSubmit={onSubmit} 
-                noValidate>
-                    <button className="popup__submit"
-                    type="submit">{submit}</button>
-                </form>
-            </div>
-        </div>
+        <PopupWithForm name={name} 
+        title={title} 
+        isOpen={isOpen} 
+        onClose={onClose} 
+        onSubmit={onSubmit}
+        submit={submit}
+        isDisabled={isDisabled} />
     )
 }
 

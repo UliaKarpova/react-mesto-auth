@@ -4,11 +4,16 @@ import {CurrentUserContext} from '../contexts/CurrentUserContext';
 import PopupWithForm from "./PopupWithForm";
 
 function EditProfilePopup({isOpen, onClose, onUpdateUser, submitStatus}) {
+    const [isDisabled, setIsDisabled] = useState(false);
     const currentUser = React.useContext(CurrentUserContext);
     const [values, setValues] = useState({});
     
     const [isValid, setIsValid] = useState(true);
     const [validationMessage, setValidationMessage] = useState({});
+
+    useEffect(() => {
+        setIsDisabled(submitStatus || !isValid);
+    }, [submitStatus, isValid])  
 
     useEffect(() => {
         setValues({...values, name: currentUser.name,
@@ -44,7 +49,7 @@ function EditProfilePopup({isOpen, onClose, onUpdateUser, submitStatus}) {
         isOpen={isOpen} 
         onClose={onClose} 
         onSubmit={handleSubmit}
-        submitStatus={submitStatus} >
+        isDisabled={isDisabled} >
             
             <input className="popup__item" 
             onChange={handleChange}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import logo from '../images/logo.svg';
+import Header from './Header';
 
 function Login({onSubmit}) {
     const [userData, setUserData] = useState({});
@@ -27,13 +27,9 @@ function Login({onSubmit}) {
 
     return (
         <>
-            <header className="header-sign">
-            
-                <a href={logo} 
-                className="header__logo" />
-                
-                <Link to="/signup" className='header-sign__text'>Регистрация</Link>
-            </header>
+            <Header className="header">                
+                <Link to="/signup" className='header__sign-link'>Регистрация</Link>
+            </Header>
             
             <main className='content'>
                 <section>

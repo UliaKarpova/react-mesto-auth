@@ -1,32 +1,38 @@
 import React from "react";
-import {useEffect, useRef, useState} from 'react';
+import {useEffect, useState} from 'react';
 import PopupWithForm from "./PopupWithForm";
 
 
 function AddPlacePopup({submit, isOpen, onClose, onSubmit, submitStatus}) {
-    const placeRef = useRef('');
-    const linkRef = useRef('');
+    const [isDisabled, setIsDisabled] = useState(false);
+    const [values, setValues] = useState({});
     const [isValid, setIsValid] = useState(true);
     const [validationMessages, setValidationMessages] = useState({});
     
-   useEffect(() => {
-        placeRef.current.value = '';
-        linkRef.current.value = '';
+
+    useEffect(() => {
+        setIsDisabled(submitStatus || !isValid);
+    }, [submitStatus, isValid])
+
+    useEffect(() => {
+        setValues({});
         setIsValid(false);
         setValidationMessages({});
     }, [isOpen])
 
-    function validateForm(event) {
-        const input = event.target;
-        setIsValid(input.closest('form').checkValidity());
-        setValidationMessages({...validationMessages, [input.name]: event.target.validationMessage});
+
+    function handleChange(event) {
+        const {name, value} = event.target;
+        setValues({...values, [name]: value});
+        setIsValid(event.target.closest('form').checkValidity());
+        setValidationMessages({...validationMessages, [name]: event.target.validationMessage});
     }
 
     function handleSubmit(event) {
         event.preventDefault();
         onSubmit({
-            name: placeRef.current.value,
-            link: linkRef.current.value
+            name: values.name,
+            link: values.link
         });
     }
 
@@ -38,12 +44,11 @@ function AddPlacePopup({submit, isOpen, onClose, onSubmit, submitStatus}) {
         isOpen={isOpen} 
         onClose={onClose}
         submitStatus={submitStatus} 
-        isValid={isValid} >
+        isDisabled={isDisabled} >
            
             <input className="popup__item" 
-            onChange={validateForm}
-            defaultValue=''
-            ref={placeRef}
+            onChange={handleChange}
+            value={values.name || ""}
             minLength="2" 
             maxLength="20" 
             id="image-name" 
@@ -56,9 +61,8 @@ function AddPlacePopup({submit, isOpen, onClose, onSubmit, submitStatus}) {
             {validationMessages.name}</span>
             
             <input className="popup__item" 
-            onChange={validateForm}
-            defaultValue=""
-            ref={linkRef}
+            onChange={handleChange}
+            value={values.link || ""}
             id="image-link" 
             name="link" 
             type="url" 

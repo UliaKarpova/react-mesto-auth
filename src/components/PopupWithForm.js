@@ -1,13 +1,6 @@
 import React from 'react';
-import {useState, useEffect} from 'react';
 
-function PopupWithForm({name, title, submit="Сохранить", isOpen, onClose, children, onSubmit, isValid, submitStatus}) {
-    const [isDisabled, setIsDisabled] = useState(false);
-    
-    useEffect(() => {
-        setIsDisabled(submitStatus || !isValid);
-    }, [submitStatus, isValid])
-
+function PopupWithForm({name, title, submit="Сохранить", isOpen, onClose, children, onSubmit, isDisabled}) {
     return (
         <div className={`popup popup_type_${name} ${isOpen && "popup_opened"}`}>
         

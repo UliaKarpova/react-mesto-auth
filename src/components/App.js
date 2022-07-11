@@ -39,6 +39,23 @@ function App() {
     const [isUserRegistred, setIsUserRegistred] = useState(false); 
     const [userEmail, setUserEmail] = useState('');
     const [loggedIn, setLoggedIn] = useState(false);
+    const isOpen = isEditAvatarPopupOpen || isEditProfilePopupOpen || isAddPlacePopupOpen || isImageDeletePopupOpen || isInfoTooltipOpen;
+
+    useEffect(() => {
+        function closeByEscape(evt) {
+            if(evt.key === 'Escape') {
+                closeAllPopups();
+            }
+        }
+
+        if(isOpen) {
+            document.addEventListener('keydown', closeByEscape);
+            return () => {
+                document.removeEventListener('keydown', closeByEscape);
+            }
+        }
+    }, [isOpen]) 
+  
 
     useEffect(() => {
         Promise.all([
@@ -52,7 +69,6 @@ function App() {
     }, [])
 
     useEffect(() => {
-        /*localStorage.removeItem('token');*/
         tokenCheck();
     }, [])
 
@@ -64,6 +80,7 @@ function App() {
                     .then((res) => {
                         if (res) {
                             setLoggedIn(true);
+                            setUserEmail(res.data.email);
                             history.push('/');
                         }
                     }).catch((err) => console.log(err));
@@ -108,7 +125,7 @@ function App() {
         .then((res) => {
             localStorage.setItem('token', res.token);
             setLoggedIn(true);
-            console.log(data);
+            console.log(res);
             setUserEmail(data.email);
             history.push('/');
         }).catch((err) => console.log(err))
@@ -196,48 +213,52 @@ function App() {
         <CurrentUserContext.Provider value={currentUser}>
             <Switch>
                 <ProtectedRoute exact path="/" loggedIn={loggedIn}>
-                    <>            
-                        <Header email={userEmail} exitFromAccount={handleAccountExit} />
+                    <Header>
+                        <div className='header__acc-container'>
+                            <p className='header__account'>{userEmail}</p>
+                
+                            <p className='header__account-exit'
+                            onClick={handleAccountExit}>Выйти</p>
+                        </div>
+                    </Header>
 
-                        <Main 
-                        onImageDeleteClick={handleImageDeleteClick}
-                        onEditAvatar={handleEditAvatarClick} 
-                        onEditProfile={handleEditProfileClick} 
-                        onCardClick={setSelectedCard} 
-                        onAddPlace={handleAddPlaceClick} 
-                        cards={cards}
-                        onCardLike={handleCardLike} />
+                    <Main 
+                    onImageDeleteClick={handleImageDeleteClick}
+                    onEditAvatar={handleEditAvatarClick} 
+                    onEditProfile={handleEditProfileClick} 
+                    onCardClick={setSelectedCard} 
+                    onAddPlace={handleAddPlaceClick} 
+                    cards={cards}
+                    onCardLike={handleCardLike} />
 
-                        <Footer />
+                    <Footer />
 
-                        <EditProfilePopup isOpen={isEditProfilePopupOpen} 
-                        onClose={closeAllPopups} 
-                        onUpdateUser={handleUpdateUser} 
-                        submitStatus={submitDisabled} />
+                    <EditProfilePopup isOpen={isEditProfilePopupOpen} 
+                    onClose={closeAllPopups} 
+                    onUpdateUser={handleUpdateUser} 
+                    submitStatus={submitDisabled} />
 
-                        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} 
-                        onClose={closeAllPopups} 
-                        onUpdateAvatar={handleUpdateAvatar} 
-                        submitStatus={submitDisabled} />
+                    <EditAvatarPopup isOpen={isEditAvatarPopupOpen} 
+                    onClose={closeAllPopups} 
+                    onUpdateAvatar={handleUpdateAvatar} 
+                    submitStatus={submitDisabled} />
 
-                        <AddPlacePopup submit="Создать" 
-                        cards={cards}
-                        isOpen={isAddPlacePopupOpen} 
-                        onClose={closeAllPopups} 
-                        onSubmit={handleAppPlaceSubmit}
-                        submitStatus={submitDisabled} />
+                    <AddPlacePopup submit="Создать" 
+                    cards={cards}
+                    isOpen={isAddPlacePopupOpen} 
+                    onClose={closeAllPopups} 
+                    onSubmit={handleAppPlaceSubmit}
+                    submitStatus={submitDisabled} />
                     
-                        <ImageDeletePopup name="delete-image" 
-                        title="Вы уверены?" 
-                        submit="Да" 
-                        onSubmit={handleCardDelete}
-                        isOpen={isImageDeletePopupOpen} 
-                        onClose={closeAllPopups} />
+                    <ImageDeletePopup name="delete-image" 
+                    title="Вы уверены?" 
+                    submit="Да" 
+                    onSubmit={handleCardDelete}
+                    isOpen={isImageDeletePopupOpen} 
+                    onClose={closeAllPopups} />
 
-                        <ImagePopup card={selectedCard} 
-                        onClose={closeAllPopups} />
-                    </>
-            
+                    <ImagePopup card={selectedCard} 
+                    onClose={closeAllPopups} />    
                 </ProtectedRoute>
             
                 <Route path="/signup">
