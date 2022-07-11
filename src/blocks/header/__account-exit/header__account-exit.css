@@ -1,22 +1,22 @@
-.header-sign__text {
+.header__account-exit {
     font-family: 'Inter', sans-serif;
-    color: #fff;
-    text-decoration: none;
     font-size: 18px;
     font-weight: 400;
     line-height: 22px;
     letter-spacing: 0em;
-    text-align: right;
+    text-align: left;
+    color: #A9A9A9;
+    text-decoration: none;
+    margin-left: 24px;
 }
 
-
-.header-sign__text:hover {
+.header__account-exit:hover {
     cursor: pointer;
     opacity: .6;
 }
 
 @media (max-width: 1100px) {
-    .header-sign__text {
+    .header__account-exit {
         margin-right: 27px;
     }
 }

@@ -12,39 +12,35 @@ export const register = (data) => {
             if (res.status === 200 || res.status === 201){
               return res.json();
             }
-          } catch(e){
-            return (e)
-          }
-        })
+        } catch(e) {
+            return (e);
+        }
+    })
         
 }
 
-export const auth = (email, password) => {
-    return fetch(`${BASE_URL}/singin`, {
+export const auth = (data) => {
+    return fetch(`${BASE_URL}/signin`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({email, password})
-        .then((res) => {
-            return res.json()
-        }).then((data) => {
-            localStorage.setItem('token', data.token);
-        })
+        body: JSON.stringify(data)
     })
+        .then((res) => {
+            console.log(res);
+            return res.json()
+        })
 }
 
-export const isTokenVAlid = () => {
+export const isTokenValid = (token) => {
     return fetch(`${BASE_URL}/users/me`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem('token')}`
+            "Authorization": `Bearer ${token}`
         }
-        .then((res) => {
-            return res.json()
-        }).then((data) => {
-            localStorage.setItem('token', data.token);
+    }).then((res) => {
+            return res.json();
         })
-    })
 }

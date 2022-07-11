@@ -9,3 +9,8 @@
     text-align: center;
     margin: 0;
 }
+
+.sign__to-login:hover {
+    cursor: pointer;
+    opacity: .6;
+}

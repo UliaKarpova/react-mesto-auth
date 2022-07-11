@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Route, Switch, BrowserRouter, useHistory } from 'react-router-dom';
-
+import { Route, Switch, useHistory } from 'react-router-dom';
 
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
+
 import Login from './Login';
 import Register from './Register';
 import Header from './Header';
@@ -20,9 +20,8 @@ import * as apiAuth from '../utils/apiAuth.js';
 
 import '../index.css';
 
-
-
 function App() {
+
     const history = useHistory();
 
     const [currentUser, setCurrentUser] = useState({});
@@ -33,7 +32,6 @@ function App() {
     const [isImageDeletePopupOpen, setIsImageDeletePopupOpen] = useState(false);
     const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
 
-    
     const [selectedCard, setSelectedCard] = useState(null);
     const [cards, setCards] = useState([]);
     const [cardGoingToBeDeleted, setCardGoingToBeDeleted] = useState({});
@@ -41,7 +39,6 @@ function App() {
     const [isUserRegistred, setIsUserRegistred] = useState(false); 
     const [userEmail, setUserEmail] = useState('');
     const [loggedIn, setLoggedIn] = useState(false);
-
 
     useEffect(() => {
         Promise.all([
@@ -54,25 +51,51 @@ function App() {
         }).catch((err) => console.log(err));
     }, [])
 
-    /*function addTokenToLocalStorage(data) {
-        localStorage.setItem('token', data.token);
+    useEffect(() => {
+        /*localStorage.removeItem('token');*/
+        tokenCheck();
+    }, [])
+
+    function tokenCheck() {
+        if (localStorage.getItem('token')) {
+            const token = localStorage.getItem('token');
+                if (token) {
+                    apiAuth.isTokenValid(token)
+                    .then((res) => {
+                        if (res) {
+                            setLoggedIn(true);
+                            history.push('/');
+                        }
+                    }).catch((err) => console.log(err));
+                }
+        }
     }
-    function getTokenFromLocalStorage() {
-        localStorage.getItem('token');
-    }*/
 
     function handleRegisterSubmit(data) {
         apiAuth.register(data)
         .then((res) => {
             if (res) {
-                console.log(res);
-                setUserEmail(res.data.email);
                 setIsUserRegistred(true);
-                history.push('/signin');
             } else {
-            setIsUserRegistred(false);
+                setIsUserRegistred(false);
             }
         }).finally(handleInfoTooltipOpen)
+    }
+
+    function handleAccountExit() {
+        history.push('/signin');
+        localStorage.removeItem('token');
+        setUserEmail('');
+    }
+
+    function handleInfoTooltipClose() {
+        closeAllPopups();
+        setIsUserRegistred(false);
+    }
+
+    function handleInfoTooltipCloseAndRedirect() {
+        handleInfoTooltipClose();
+        history.push('/signin');
     }
 
     function handleInfoTooltipOpen() {
@@ -80,15 +103,15 @@ function App() {
     }
 
     
-    function handleLogin(e) {
-        e.preventDefault();
-        setLoggedIn(true);
-
-    }
-
-    function handleInfoTooltipClose() {
-        closeAllPopups();
-        setIsUserRegistred(false);
+    function handleLogin(data) {
+        apiAuth.auth(data)
+        .then((res) => {
+            localStorage.setItem('token', res.token);
+            setLoggedIn(true);
+            console.log(data);
+            setUserEmail(data.email);
+            history.push('/');
+        }).catch((err) => console.log(err))
     }
 
     function handleEditAvatarClick() {
@@ -171,63 +194,65 @@ function App() {
   return (
     <div className="page">
         <CurrentUserContext.Provider value={currentUser}>
-            <BrowserRouter>
             <Switch>
-            <ProtectedRoute exact path="/" loggedIn={loggedIn}>
-            <>            
-            <Header />
+                <ProtectedRoute exact path="/" loggedIn={loggedIn}>
+                    <>            
+                        <Header email={userEmail} exitFromAccount={handleAccountExit} />
 
-            <Main 
-            onImageDeleteClick={handleImageDeleteClick}
-            onEditAvatar={handleEditAvatarClick} 
-            onEditProfile={handleEditProfileClick} 
-            onCardClick={setSelectedCard} 
-            onAddPlace={handleAddPlaceClick} 
-            cards={cards}
-            onCardLike={handleCardLike} />
+                        <Main 
+                        onImageDeleteClick={handleImageDeleteClick}
+                        onEditAvatar={handleEditAvatarClick} 
+                        onEditProfile={handleEditProfileClick} 
+                        onCardClick={setSelectedCard} 
+                        onAddPlace={handleAddPlaceClick} 
+                        cards={cards}
+                        onCardLike={handleCardLike} />
 
-            <Footer />
+                        <Footer />
 
-            <EditProfilePopup isOpen={isEditProfilePopupOpen} 
-            onClose={closeAllPopups} 
-            onUpdateUser={handleUpdateUser} 
-            submitStatus={submitDisabled} />
+                        <EditProfilePopup isOpen={isEditProfilePopupOpen} 
+                        onClose={closeAllPopups} 
+                        onUpdateUser={handleUpdateUser} 
+                        submitStatus={submitDisabled} />
 
-            <EditAvatarPopup isOpen={isEditAvatarPopupOpen} 
-            onClose={closeAllPopups} 
-            onUpdateAvatar={handleUpdateAvatar} 
-            submitStatus={submitDisabled} />
+                        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} 
+                        onClose={closeAllPopups} 
+                        onUpdateAvatar={handleUpdateAvatar} 
+                        submitStatus={submitDisabled} />
 
-            <AddPlacePopup submit="Создать" 
-            cards={cards}
-            isOpen={isAddPlacePopupOpen} 
-            onClose={closeAllPopups} 
-            onSubmit={handleAppPlaceSubmit}
-            submitStatus={submitDisabled} />
-        
-            <ImageDeletePopup name="delete-image" 
-            title="Вы уверены?" 
-            submit="Да" 
-            onSubmit={handleCardDelete}
-            isOpen={isImageDeletePopupOpen} 
-            onClose={closeAllPopups} />
+                        <AddPlacePopup submit="Создать" 
+                        cards={cards}
+                        isOpen={isAddPlacePopupOpen} 
+                        onClose={closeAllPopups} 
+                        onSubmit={handleAppPlaceSubmit}
+                        submitStatus={submitDisabled} />
+                    
+                        <ImageDeletePopup name="delete-image" 
+                        title="Вы уверены?" 
+                        submit="Да" 
+                        onSubmit={handleCardDelete}
+                        isOpen={isImageDeletePopupOpen} 
+                        onClose={closeAllPopups} />
 
-            <ImagePopup card={selectedCard} 
-            onClose={closeAllPopups} />
-            </>
-  
-    </ProtectedRoute>
+                        <ImagePopup card={selectedCard} 
+                        onClose={closeAllPopups} />
+                    </>
             
-            <Route path="/signup">
-          <Register onSubmit={handleRegisterSubmit} />
-          <InfoTooltip name="tooltip" isOpen={isInfoTooltipOpen} isUserRegistred={isUserRegistred} onClose={handleInfoTooltipClose} />
-        </Route>
-        <Route path="/signin">
-          <Login handleLogin={handleLogin} />
-        </Route>
+                </ProtectedRoute>
             
+                <Route path="/signup">
+                    <Register onSubmit={handleRegisterSubmit} />
+
+                    <InfoTooltip name="tooltip" 
+                    isOpen={isInfoTooltipOpen} 
+                    isUserRegistred={isUserRegistred} 
+                    onCloseAndRedirect={handleInfoTooltipCloseAndRedirect} 
+                    onClose={handleInfoTooltipClose} />
+                </Route>
+                <Route path="/signin">
+                    <Login onSubmit={handleLogin} />
+                </Route>
             </Switch>
-            </BrowserRouter>
         </CurrentUserContext.Provider>
     </div>
   );

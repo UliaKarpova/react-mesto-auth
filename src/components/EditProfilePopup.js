@@ -48,7 +48,7 @@ function EditProfilePopup({isOpen, onClose, onUpdateUser, submitStatus}) {
             
             <input className="popup__item" 
             onChange={handleChange}
-            value={values.name}
+            value={values.name || ""}
             minLength="2" 
             maxLength="40" 
             id="name" 
@@ -57,12 +57,12 @@ function EditProfilePopup({isOpen, onClose, onUpdateUser, submitStatus}) {
             placeholder="Имя" 
             required />
             
-            <span className={`popup__item-error name-error ${!isValid && "popup__item-error_visible"}`}>
+            <span className={`popup__item-error ${!isValid && "popup__item-error_visible"}`}>
             {validationMessage.name}</span>
             
             <input className="popup__item" 
             onChange={handleChange} 
-            value={values.about}
+            value={values.about || ""}
             minLength="2" 
             maxLength="200" 
             id="info" 
@@ -71,7 +71,7 @@ function EditProfilePopup({isOpen, onClose, onUpdateUser, submitStatus}) {
             placeholder="Занятие" 
             required />
             
-            <span className={`popup__item-error info-error ${!isValid && "popup__item-error_visible"}`}>
+            <span className={`popup__item-error ${!isValid && "popup__item-error_visible"}`}>
             {validationMessage.about}</span>
         </PopupWithForm>
     )
